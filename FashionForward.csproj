@@ -1,0 +1,43 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(RunConfiguration)' == 'https' " />
+  <PropertyGroup Condition=" '$(RunConfiguration)' == 'http' " />
+  <ItemGroup>
+    <PackageReference Include="MySql.Data" Version="8.1.0" />
+    <PackageReference Include="SendGrid" Version="9.28.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="7.0.9" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Views\SignIn\" />
+    <None Remove="Views\SignUp\" />
+    <None Remove="Views\SignIn\site.css" />
+    <None Remove="Views\Cart\" />
+    <None Remove="Views\Success\" />
+    <None Remove="Views\Verify\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Views\SignIn\" />
+    <Folder Include="Views\SignUp\" />
+    <Folder Include="wwwroot\assets\" />
+    <Folder Include="wwwroot\assets\banners\" />
+    <Folder Include="wwwroot\assets\banners\horizontal\" />
+    <Folder Include="wwwroot\assets\banners\vertical\" />
+    <Folder Include="wwwroot\assets\icons\" />
+    <Folder Include="Views\Cart\" />
+    <Folder Include="Views\Success\" />
+    <Folder Include="Views\Verify\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Remove="wwwroot\assets\" />
+    <Content Remove="wwwroot\assets\banners\" />
+    <Content Remove="wwwroot\assets\banners\desktop\" />
+    <Content Remove="wwwroot\assets\banners\mobile\" />
+    <Content Remove="wwwroot\assets\icons\" />
+  </ItemGroup>
+</Project>
