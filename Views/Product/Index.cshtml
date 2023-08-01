@@ -1,0 +1,184 @@
+﻿@using Microsoft.AspNetCore.Http
+@using Microsoft.AspNetCore.Mvc.RazorPages
+
+@{
+    ViewData["Title"] = "Products Page";
+    @model List<Product>;
+    List<Product> products = Model;
+
+    int itemsPerPage = 10; // Número de elementos por página
+
+    // Get search query from the query string
+    string searchQuery = Context.Request.Query.ContainsKey("search") ? Context.Request.Query["search"].ToString().ToLower() : "";
+
+    // Filter products based on search query
+    if (!string.IsNullOrEmpty(searchQuery))
+    {
+        products = products.Where(p => p.Name.ToLower().Contains(searchQuery)).ToList();
+    }
+
+    // Apply sorting based on the selected option
+    string sortOption = Context.Request.Query.ContainsKey("sort") ? Context.Request.Query["sort"] : "";
+
+    if (sortOption == "lowest")
+    {
+        products = products.OrderBy(p => p.Price).ToList();
+    }
+    else if (sortOption == "highest")
+    {
+        products = products.OrderByDescending(p => p.Price).ToList();
+    }
+
+    int totalPages = (int)Math.Ceiling((double)products.Count / itemsPerPage);
+
+    int currentPage = Context.Request.Query.ContainsKey("page") ? int.Parse(Context.Request.Query["page"]) : 1;
+    currentPage = Math.Clamp(currentPage, 1, totalPages);
+
+    products = products.Skip((currentPage - 1) * itemsPerPage).Take(itemsPerPage).ToList();
+}
+
+<link rel="stylesheet" href="~/css/product.css" />
+
+@await Html.PartialAsync("_Navbar")
+
+<main role="main" class="d-none main-container">
+
+    <div class="options-container">
+
+        <div class="search-grid">
+            <input id="search" type="text" class="form-control" placeholder="Search">
+            <button id="clearSearch" class="clear-search btn btn-danger d-none" onclick="clearSearch()">x</button>
+        </div>
+
+        @if (products.Count > 1)
+        {
+            <div class="sort-grid">
+                <label for="sort-select">Sort by:</label>
+                <select id="sort-select" class="form-select" aria-label="Sort Products Options" onchange="sortProducts(event)">
+                    <option value="">Relevant</option>
+                    <option value="lowest">Lowest Price</option>
+                    <option value="highest">Highest Price</option>
+                </select>
+            </div>
+        }
+
+    </div>
+
+    <div class="products">
+        @foreach (var product in products)
+        {
+            <a class="product-link text-decoration-none shadow" asp-area="" asp-controller="Product" asp-action="Detail" asp-route-productId="@product.Id">
+                <div class="card">
+                    <img class="card-img-top" src="@product.Image" alt="@product.Name Image">
+                    <div class="card-body">
+                        <h5 class="card-title text-black">@product.Name</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">$@product.Price</h6>
+                    </div>
+                </div>
+            </a>
+        }
+    </div>
+
+    @if (totalPages > 1)
+    {
+        <div class="pagination">
+            @for (int page = 1; page <= totalPages; page++)
+            {
+                int pageNumber = page;
+                <button @(currentPage == pageNumber ? "disabled" : "") onclick="goToPage(event)" class="page-link @(currentPage == pageNumber ? "active" : "")">@pageNumber</button>
+            }
+        </div>
+    }
+
+</main>
+
+<div id="spinner">
+    <img src="~/assets/loading.gif" alt="Loading Gif" />
+</div>
+
+<script>
+    // Data
+    const sortOption = '@sortOption';
+    const productsCount = '@products.Count';
+
+    // Elements
+    const searchInput = document.getElementById("search");
+    searchInput.addEventListener("keyup", function (event) {
+        if (event.key === "Enter" || event.code === "Enter") searchProducts();
+    });
+    const mainContainer = document.querySelector('.main-container');
+    const spinnerProductsContainer = document.getElementById("spinner");
+    const loadingTime = 1000;
+    setTimeout(() => {
+        spinnerProductsContainer.classList.toggle('d-none');
+        mainContainer.classList.toggle('d-none');
+    }, loadingTime);
+
+    // SET DEFAULT VALUES
+    if (productsCount > 1) setDefaultSelectedValue();
+    if (getSearchValue()) {
+        const clearSearchBtn = document.getElementById('clearSearch');
+        clearSearchBtn.classList.toggle('d-none');
+        searchInput.value = getSearchValue();
+    }
+
+    // === FUNCTIONS ===
+    function clearSearch() {
+        const currentUrl = new URL(window.location.href);
+        currentUrl.searchParams.delete("search");
+        window.location.href = currentUrl.href;
+    }
+
+    function getSearchValue() {
+        const currentUrl = new URL(window.location.href);
+        const searchParam = currentUrl.searchParams.get("search");
+        return (searchParam) ? decodeURI(searchParam) : null;
+    }
+
+    function searchProducts() {
+        const searchValue = encodeURI(searchInput.value.trim());
+        const currentSearch = getSearchValue();
+        if (currentSearch == searchValue || searchValue === null) return; // Same Search Value
+        const currentUrl = new URL(window.location.href);
+        if (searchValue.length > 0) {
+            currentUrl.searchParams.set("search", searchValue);
+        } else {
+            currentUrl.searchParams.delete("search");
+        }
+        window.location.href = currentUrl.href;
+    }
+
+    function sortProducts(event) {
+        const selectedOption = event.target.value;
+        const currentUrl = new URL(window.location.href);
+        const currentSortedOpt = currentUrl.searchParams.get("sort");
+        if (currentSortedOpt == selectedOption) return; // Same Sort Value
+        if (selectedOption.length > 0) {
+            currentUrl.searchParams.set("sort", selectedOption);
+        } else {
+            currentUrl.searchParams.delete("sort");
+        }
+        window.location.href = currentUrl.href;
+    }
+
+    function setDefaultSelectedValue() {
+        var sortSelect = document.getElementById("sort-select");
+
+        for (var i = 0; i < sortSelect.options.length; i++) {
+            if (sortSelect.options[i].value === sortOption) {
+                sortSelect.options[i].selected = true;
+                break;
+            }
+        }
+    }
+
+    function goToPage(event) {
+        const currentUrl = new URL(window.location.href);
+        const page = currentUrl.searchParams.get("page");
+        const newPage = event.target.textContent;
+        if (page === null && newPage == 1) return; // Default Load
+        if (page == newPage) return; // Same Page
+        currentUrl.searchParams.set("page", newPage);
+        window.location.href = currentUrl.href;
+    }
+</script>

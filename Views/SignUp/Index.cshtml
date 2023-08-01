@@ -1,0 +1,148 @@
+﻿@{
+    ViewData["Title"] = "Sign Up Page";
+    var errorMessage = TempData["ErrorMessage"] as string;
+}
+
+<style>
+    body {
+        position: relative;
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        /* Gradient */
+        background: #F0F2F0;
+        background: -webkit-linear-gradient(to right, #000C40, #F0F2F0);
+        background: linear-gradient(to right, #000C40, #F0F2F0);
+    }
+
+    main {
+        width: 100%;
+        max-width: 430px;
+        padding: 15px;
+        margin-left: 1rem;
+        margin-right: 1rem;
+    }
+
+    .form-floating input {
+        padding: 5px 0;
+        font-size: 16px;
+        color: #ccc;
+        background: 0 0;
+    }
+
+    .submit {
+        border-radius: 20px;
+    }
+
+    .notificator {
+        width: 50%;
+        height: 56px;
+        position: absolute;
+        top: 50px;
+        border-radius: 20px;
+    }
+
+    .have-account {
+        font-weight: bold;
+    }
+
+    header {
+        position: absolute;
+        z-index: 1;
+        top: 0;
+        left: 0;
+    }
+
+    header .navbar-brand {
+        font-size: 2.5rem;
+        color: white;
+        margin-left: 1.5rem;
+    }
+</style>
+
+
+<div id="notificator" class="alert alert-danger d-none notificator shadow-sm" role="alert"></div>
+
+<header class="p-3">
+    <div class="container">
+        <div class="navbar-container">
+            <a class="navbar-brand text-decoration-none" asp-area="" asp-controller="Home" asp-action="Index">FashionForward</a>
+        </div>
+    </div>
+</header>
+
+<main role="main" class="text-center card card-3 p-5 shadow">
+    <form action="/User/AddUser" method="post" onsubmit="validate(event)">
+        <img class="mb-4" src="/assets/fashion-forward-logo-black.png" alt="Fashion Forward Logo">
+        <h1 class="h3 mb-3 fw-normal">Sign Up</h1>
+
+        <div class="form-floating mb-3">
+            <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com" name="email">
+            <label class="" for="floatingInput">Email address</label>
+        </div>
+        <div class="form-floating mb-3">
+            <input type="password" class="form-control" id="floatingPassword" placeholder="Password" name="password">
+            <label class="" for="floatingPassword">Password</label>
+        </div>
+        <div class="form-floating mb-3">
+            <input type="password" class="form-control" id="floatingConfirmPassword" placeholder="Password" name="confirmPassword">
+            <label class="" for="floatingConfirmPassword">Confirm Password</label>
+        </div>
+
+        <div class="checkbox mb-3">
+            <a class="have-account text-black text-decoration-none" asp-area="" asp-controller="SignIn" asp-action="Index">DO YOU HAVE AN ACCOUNT?</a>
+        </div>
+
+        <button class="w-50 btn btn-lg btn-primary submit" type="submit">Submit</button>
+    </form>
+</main>
+
+<script>
+    var errorMessage = '@errorMessage';
+    if (errorMessage) showNotificator(errorMessage);
+
+
+    function validate(event) {
+        const email = document.getElementById('floatingInput').value;
+        const password = document.getElementById('floatingPassword').value;
+        const confirmPwd = document.getElementById('floatingConfirmPassword').value;
+
+        if (!email) {
+            showNotificator('You need to enter an email');
+            event.preventDefault();
+            return;
+        }
+
+        if (!password) {
+            showNotificator('You need to enter an password');
+            event.preventDefault();
+            return;
+        }
+
+        if (!confirmPwd) {
+            showNotificator('You need to enter the confirm password');
+            event.preventDefault();
+            return;
+        }
+
+        if (password !== confirmPwd) {
+            showNotificator('Passwords do not match');
+            event.preventDefault();
+        }
+    }
+
+    function showNotificator(text) {
+        const notificator = document.getElementById('notificator');
+        if (!notificator.classList.contains("d-none")) return;
+        notificator.textContent = text;
+        // Show
+        notificator.classList.toggle('d-none');
+        // Hide
+        setTimeout(() => {
+            notificator.classList.toggle('d-none');
+            notificator.textContent = '';
+        }, 4000);
+        return;
+    }
+</script>

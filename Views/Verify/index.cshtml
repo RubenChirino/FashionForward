@@ -1,0 +1,45 @@
+﻿@{
+    ViewData["Title"] = "Verify Page";
+    @model bool;
+}
+
+<style>
+    .verify-container {
+        margin: auto;
+        margin-top: 4rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .verify-container h1, .verify-container p {
+        margin: 0;
+    }
+
+    .verify-container img {
+        height: 50px;
+        width: 50px;
+    }
+</style>
+
+@await Html.PartialAsync("_Navbar")
+
+<main role="main">
+    <div class="verify-container">
+        @if (Model)
+         {
+            <h1 class="">Verification Successful</h1>
+            <p>Your account has been verified.</p>
+            <img src="~/assets/icons/verificated.png" alt="Verification Successful Image" />
+         }
+         else
+        {
+            <h1>Verification Failed</h1>
+            <p>Sorry, we couldn't verify your account.</p>
+            <img src="~/assets/icons/warning.png" alt="Verification Failed Image" />
+        }
+    </div>
+</main>
+

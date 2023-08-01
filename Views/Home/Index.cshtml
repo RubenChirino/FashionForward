@@ -1,0 +1,46 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+
+    var userId = TempData["UserId"] as int?;
+    if (userId.HasValue) userId = userId.Value;
+    var userEmail = TempData["UserEmail"] as string;
+}
+
+<style>
+    header {
+        position: absolute;
+        z-index: 1;
+    }
+</style>
+
+<script>
+    // Data
+    var userId = '@userId';
+    var userEmail = '@userEmail';
+
+    // Set User Logged Session
+    if ((userId && userEmail) && !sessionStorage.getItem("user")) {
+        sessionStorage.setItem("user", JSON.stringify({ id: userId, email: userEmail }));
+    }
+
+    // Set Cart Session
+    if (!sessionStorage.getItem("cart")) {
+        sessionStorage.setItem("cart", JSON.stringify([]));
+    }
+</script>
+
+@await Html.PartialAsync("_Navbar")
+
+<script>
+    // Elements
+    const header = document.querySelector('header');
+    if (header) header.classList.toggle('shadow-sm');
+</script>
+
+<main role="main">
+
+    @await Html.PartialAsync("_Carousel")
+
+</main>
+
+@*@await Html.PartialAsync("_Footer")*@

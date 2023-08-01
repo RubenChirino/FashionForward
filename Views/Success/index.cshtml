@@ -1,0 +1,47 @@
+﻿@{
+    ViewData["Title"] = "Success Page";
+}
+
+<link rel="stylesheet" href="~/css/success.css" />
+
+<script>
+    (async () => {
+        // Reduce Stock from DB
+        const cart = JSON.parse(sessionStorage.getItem("cart"));
+        if (cart.length) {
+            for (const item of cart) {
+                await reduceStock(item.code, item.quantity);
+            }
+        }
+        // Clean Cart
+        sessionStorage.setItem("cart", JSON.stringify([]));
+        // Update Cart Number
+        const cartNumberElement = document.getElementById('bagNumber');
+        if (cartNumberElement) cartNumberElement.textContent = 0;
+    })();
+    function reduceStock(code, quantity) {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const data = await fetch(`@Url.Action("ReduceStockEndpoint", "Product")?productCode=${code}&quantity=${quantity}`);
+                const res = await data.json();
+                resolve();
+            } catch (err) {
+                reject(err);
+            }
+        });
+    }
+</script>
+
+@await Html.PartialAsync("_Navbar")
+
+<main role="main">
+
+    <div class="success-purchase-container">
+        <h2>Your purchase has been successful!</h2>
+
+        <img src="~/assets/icons/shipping.png" alt="Shipping Icon" />
+
+        <h3>Your products are on the way.</h3>
+    </div>
+
+</main>

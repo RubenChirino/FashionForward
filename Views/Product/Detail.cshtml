@@ -1,0 +1,129 @@
+﻿@{
+    ViewData["Title"] = "Product Detail Page";
+    @model Product;
+}
+
+<link rel="stylesheet" href="~/css/productDetail.css" />
+
+@await Html.PartialAsync("_Navbar")
+
+<div id="notificator" class="alert alert-primary d-none notificator shadow-sm" role="alert"></div>
+
+<main role="main">
+
+    <div class="product-container">
+
+        <div class="card shadow">
+
+            <section class="product-box-1">
+                <figure>
+                    <img src="@Model.Image" />
+                </figure>
+            </section>
+
+            <section class="product-box-2">
+                <p><b>Category:</b> @Model.Category</p>
+                <h3>@Model.Name</h3>
+                <p><b>Price:</b> $@Model.Price</p>
+                <p><b>Stock:</b> @Model.Stock</p>
+                <button @(@Model.Stock == 0 ? "disabled" : "")  id="addToCart" class="add-to-cart w-50 btn btn-lg btn-primary">Add to cart</button>
+            </section>
+
+        </div>
+
+    </div>
+
+  
+    <div class="gallery-container d-none">
+        @foreach (var image in Model.Gallery.Split(','))
+        {
+            <figure class="image-grid">
+                <img src="@image" />
+            </figure>
+        }
+    </div>
+
+</main>
+
+<div id="spinner">
+    <img src="~/assets/loading.gif" alt="Loading Gif" />
+</div>
+
+<script>
+    // Data
+    var productId = '@Model.Id';
+    var productCode = '@Model.Code';
+    var productName = '@Model.Name';
+    var productImage = '@Model.Image';
+    var productPrice = '@Model.Price';
+    var productStock = '@Model.Stock';
+    // ---
+
+    // Elements
+    const cartNumberElement = document.getElementById('bagNumber');
+    const spinnerGallery = document.getElementById('spinner');
+    const galleryContainer = document.querySelector('.gallery-container');
+    const loadingTime = 1000;
+    setTimeout(() => {
+        spinnerGallery.classList.toggle('d-none');
+        galleryContainer.classList.toggle('d-none');
+    }, loadingTime);
+
+    const addToCartBtn = document.getElementById('addToCart');
+    if (addToCartBtn) {
+        addToCartBtn.onclick = () => {
+            const cartData = JSON.parse(sessionStorage.getItem("cart"));
+            let notificatorMsg = '';
+            // The product exist in cart?
+            const index = cartData.findIndex((product) => product.code === productCode);
+            if (index !== -1) {
+                const cartProduct = cartData[index];
+                if (cartProduct.quantity <= productStock) {
+                    cartProduct.quantity = parseInt(cartProduct.quantity) + 1;
+                    updateCartData(cartData);
+                    notificatorMsg = 'The product quantity has been incremented in your cart';
+                    updateCartNumber();
+                } else {
+                    // Show Notification
+                }
+            } else { // New product
+                notificatorMsg = 'The new product has been added in your cart';
+                const newProduct = { id: productId, code: productCode, name: productName, image: productImage, price: productPrice, quantity: 1 };
+                cartData.push(newProduct);
+                updateCartData(cartData);
+                updateCartNumber();
+            }
+            
+            showNotificator(notificatorMsg);
+        };
+    }
+
+    let timeId;
+    function showNotificator(text) {
+
+        notificator.textContent = text;
+        if (timeId) {
+            clearTimeout(timeId);
+        } else {
+            // Show
+            notificator.classList.toggle('d-none');
+        }
+        // Hide
+        timeId = setTimeout(() => {
+            notificator.classList.toggle('d-none');
+            timeId = null;
+        }, 3500);
+
+        return;
+    }
+
+    function updateCartData(data) {
+        sessionStorage.setItem("cart", JSON.stringify(data));
+    }
+
+    function updateCartNumber() {
+        const cartData = JSON.parse(sessionStorage.getItem("cart"));
+        const totalItems = cartData.reduce((acc, cur) => cur.quantity + acc, 0);
+        if (cartNumberElement) cartNumberElement.textContent = totalItems;
+    }
+</script>
