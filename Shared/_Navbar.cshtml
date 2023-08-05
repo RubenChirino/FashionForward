@@ -1,0 +1,109 @@
+﻿<link rel="stylesheet" href="~/css/navbar.css" />
+
+<header class="p-3 shadow-sm">
+    <div class="container">
+        <div class="navbar-container">
+
+            <a class="navbar-brand text-decoration-none" asp-area="" asp-controller="Home" asp-action="Index">FashionForward</a>       
+
+            <div class="navbar-links-container">
+
+                <div class="links-container text-end">
+
+                    @* <a id="collection" class="collection text-decoration-none" asp-area="" asp-controller="Product" asp-action="Index">COLLECTION</a> *@
+
+                    <a id="womanCollection" class="collection navbar-link text-decoration-none" asp-area="" asp-controller="Product" asp-action="Index" asp-route-category="woman">WOMAN</a>
+                    <a id="manCollection" class="collection navbar-link text-decoration-none" asp-area="" asp-controller="Product" asp-action="Index" asp-route-category="man">MAN</a>
+                    <a id="kidsCollection" class="collection navbar-link text-decoration-none" asp-area="" asp-controller="Product" asp-action="Index" asp-route-category="kids">KIDS</a>
+
+                </div>
+
+                <div class="actions-container">
+                    <a id="signIn" class="sign-in navbar-link text-decoration-none" asp-area="" asp-controller="SignIn" asp-action="Index">SIGN IN</a>
+                    <button id="signOut" type="button" class="sign-out navbar-link d-none bg-transparent border-0">SING OUT</button>
+                    <a id="cart" class="cart text-decoration-none" asp-area="" asp-controller="Cart" asp-action="Index">
+                        <img id="bagIcon" src="~/assets/icons/icon-bag-black.png" class="bag-icon" alt="Bag Icon">
+                        <span id="bagNumber" class="bag-number">0</span>
+                    </a>
+                    @*<a id="user" class="d-none btn btn-warning me-2">User</a>*@
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</header>
+
+<script>
+    // Data
+    const user = JSON.parse(sessionStorage.getItem("user"));
+
+    // Elements
+    const signIn = document.getElementById('signIn');
+    const signOut = document.getElementById('signOut');
+    const cartLink = document.getElementById('cart');
+
+    if (user?.email && user?.id) {
+        // Hide Authentication Buttons 
+        toggleAuthenticatorButtons();
+        // Show User Info Button
+        toggleLoggedButtons();
+    }
+
+    signOut.onclick = () => {
+        sessionStorage.removeItem("user");
+        // Hide User Info Button 
+        toggleLoggedButtons();
+        // Show User Authentication Buttons
+        toggleAuthenticatorButtons(); 
+    }
+
+    // === HIDE UNNECESSARY ELEMENTS ===
+    const page = window.location.href.split('/').pop().split('?')[0].toLowerCase();
+    const url = new URL(window.location.href);
+    const category = url.searchParams.get("category");
+    if (page === "cart") cartLink.classList.toggle('d-none');
+    /* if (page === "product") {
+        const collection = document.getElementById('collection');
+        collection.classList.toggle('d-none');
+    }; */
+    if (category === "woman") {
+        const womanCollection = document.getElementById('womanCollection');
+        womanCollection.classList.toggle('d-none')
+    };
+    if (category === "man") {
+        const manCollection = document.getElementById('manCollection');
+        manCollection.classList.toggle('d-none')
+    };
+    if (category === "kids") {
+        const kidsCollection = document.getElementById('kidsCollection');
+        kidsCollection.classList.toggle('d-none')
+    };
+
+    // === SET VALUES ===
+    updateCartNumber();
+
+    // === ELEMENTS ===
+    function toggleAuthenticatorButtons() {
+        signIn.classList.toggle('d-none');
+        //signUp.classList.toggle('d-none');
+    }
+
+    function toggleLoggedButtons() {
+        //userLink.classList.toggle('d-none');
+        signOut.classList.toggle('d-none');
+    }
+
+    // === VALUES ===
+    function updateCartNumber() {
+        const cartData = JSON.parse(sessionStorage.getItem("cart"));
+
+        let val = 0; 
+        if (cartData && cartData.length) {
+            val = cartData.reduce((acc, cur) => cur.quantity + acc, 0);
+        }
+
+        const cartNumber = cartLink.querySelector('#bagNumber');
+        if (cartNumber) cartNumber.textContent = val;
+    }
+</script>
