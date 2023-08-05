@@ -1,0 +1,126 @@
+﻿    .options-container {
+        max-width: 1200px;
+        display: flex;
+        justify-content: space-around;
+        align-content: center;
+        margin: auto;
+        margin-top: 2.5rem;
+    }
+
+    .search-grid {
+        position: relative;
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        flex: 0.5;
+    }
+
+    .search-grid input {
+        height: 42px;
+        border-radius: 20px;
+    }
+
+    .search-grid .clear-search {
+        position: absolute;
+        right: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 25px;
+        width: 25px;
+        border-radius: 50%;
+    }
+
+    .sort-grid {
+        display: flex;
+        gap: 0.5rem;
+        flex: 0.2;
+    }
+
+    .sort-grid label {
+        width: 100px;
+        display: flex;
+        align-items: center;
+    }
+
+    .products {
+        max-width: 1200px;
+        display: grid;
+        align-items: center;
+        justify-items: center;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        margin: 2rem auto;
+        column-gap: 1.5rem;
+        row-gap: 2.5rem;
+    }
+
+    .product-link {
+        max-width: 315px;
+    }
+
+    .product-link .card {
+        height: 100%;
+        border: none;
+    }
+
+    .product-link .card .card-img-top {
+        height: 82%;
+        object-fit: contain;
+        background-color: #f5f6f8;
+    }
+
+    .product-link .card .card-body {
+        height: 18%;
+    }
+
+    .pagination {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 2.5rem;
+    }
+
+    .pagination button {
+        height: 35px;
+        width: 35px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 0.5rem;
+        color: black;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
+
+    .pagination button.active {
+        background-color: #007bff;
+        color: white;
+    }
+
+    #spinner {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 70vh;
+    }
+
+/* == TABLET == */
+
+@media (max-width: 1200px) {
+    .sort-grid {
+        flex-direction: column;
+    }
+}
+
+/* == PHONES == */
+
+@media (max-width: 768px) {
+    .sort-grid {
+        flex: 0.3;
+    }
+
+    .options-container {
+        flex-direction: column;
+        max-width: 300px;
+        row-gap: 0.6rem;
+    }
+}

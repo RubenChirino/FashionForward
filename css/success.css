@@ -1,0 +1,28 @@
+﻿.success-purchase-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    max-width: 1200px;
+    margin: 3rem auto;
+}
+
+.success-purchase-container img {
+    width: 100px;
+    height: 100px;
+}
+
+@media (max-width: 576px) {
+    .success-purchase-container {
+        margin-right: 1rem;
+        margin-left: 1rem;
+    }
+
+    .success-purchase-container h2 {
+        font-size: 18px;
+    }
+
+    .success-purchase-container h3 {
+        font-size: 16px;
+    }
+}
